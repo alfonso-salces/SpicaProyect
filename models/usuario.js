@@ -69,11 +69,17 @@ class Usuarios extends Model {}
         },
       }
     },
-    imagen: {
+    image: {
       type: sequelize.STRING,
       allowNull: false,
       notEmpty: true,
-      defaultValue: 'default'
+      //defaultValue: 'default'
+    },
+    image_dir: {
+      type: sequelize.STRING,
+      allowNull: false,
+      notEmpty: true,
+      defaultValue: process.env.urlImagen
     },
     saltSecret: {
       type: sequelize.STRING
