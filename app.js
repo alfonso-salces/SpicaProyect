@@ -8,7 +8,6 @@ const express = require('express');
 const cors = require('cors');
 //const bodyParser = require('body-parser');
 const path = require('path');
-const exphbs = require('express-handlebars');
 const multer = require('multer');
 
 const rtsIndex = require('./routes/index.router');
@@ -24,28 +23,25 @@ db.authenticate()
   });
 db.sync();
 
-// Inicializo express y configuro las el motor de plantillas.
+// Inicializo express
 var app = express();
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
 // Middlewares utilizados
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
 const storage = multer.diskStorage({
-  destination: path.join(__dirname, 'public/img/uploads'),
+  destination: path.join(__dirname, process.env.urlImagen),
+  limits: { fileSize: 10 * 1024 * 1024 },
   filename: (req, file, cb, filename) => {
     var extension = (path.extname(file.originalname).split(".")[1]);
     if(extension == 'jpg' || extension == 'jpeg' || extension == 'png') {
       cb(null, randomNumber() + path.extname(file.originalname));
-    } else {
-      return cb(new Error('Error en el tipo de archivo.'));
     }
-  }
+  },
 });
 app.use(multer({storage}).single('image'));
-app.use('/api', rtsIndex);
+app.use(rtsIndex);
 
 // Control de errores
 app.use((err, req, res, next) => {

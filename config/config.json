@@ -4,13 +4,12 @@
         "SQLITE_URI": "db/database.sqlite",
         "JWT_SECRET": "SECRET#0201",
         "JWT_EXP": "10m",
-        "urlImagen": "localhost:3000/public/img/uploads/"
+        "urlImagen": "/public/img/uploads"
     },
     "production": {
         "PORT": 80,
         "SQLITE_URI": "db/database.sqlite",
         "JWT_SECRET": "SECRET#0201",
-        "JWT_EXP": "2m",
-        "urlImagen": "<dominio>/public/img/uploads/"
+        "JWT_EXP": "2m"
     }
 }

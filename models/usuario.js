@@ -75,12 +75,6 @@ class Usuarios extends Model {}
       notEmpty: true,
       //defaultValue: 'default'
     },
-    image_dir: {
-      type: sequelize.STRING,
-      allowNull: false,
-      notEmpty: true,
-      defaultValue: process.env.urlImagen
-    },
     saltSecret: {
       type: sequelize.STRING
     },
