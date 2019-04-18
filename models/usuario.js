@@ -75,6 +75,11 @@ class Usuarios extends Model {}
       notEmpty: true,
       //defaultValue: 'default'
     },
+    rol: {
+      type: sequelize.STRING,
+      allowNull: false,
+      notEmpty: true,
+    },
     saltSecret: {
       type: sequelize.STRING
     },

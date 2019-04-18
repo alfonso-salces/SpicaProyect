@@ -6,7 +6,6 @@ const { randomNumber } = require('./helpers/libs');
 const morgan = require('morgan');
 const express = require('express');
 const cors = require('cors');
-//const bodyParser = require('body-parser');
 const path = require('path');
 const multer = require('multer');
 

@@ -2,6 +2,7 @@ const Usuario = require('../models/usuario').Usuarios;
 const usersController = {};
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 /**
  *  Crea un usuario.
@@ -45,7 +46,7 @@ usersController.createUser = async(req, res, next) => {
                     )
                 .catch(err => res.status(400).json(err.msg));
             } else {
-                res.status(422).json({'Error': 'Solo se admiten imágenes con formato jpg o png.'});
+                res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg o png.'});
             }
         }
 
@@ -59,13 +60,28 @@ usersController.login = async(req, res, next) => {
     await Usuario.findOne({ where: { email: req.body.email } }).then(function (user) {
         if (!user) {
             console.log('El correo electrónico y/o la contraseña introducidos no son correctos.');
+            console.log(req.body.password);
+            console.log(req.body.email);
             res.status(422).json({'error': 'El correo electrónico y/o la contraseña introducidos no son correctos.'});
         } else if (!user.validPassword(req.body.password)) {
             console.log('La contraseña introducida no es correcta.');
-            res.status(422).json({'error': 'El correo electrónico y/o la contraseña introducidos no son correctos.'});
+            console.log(req.body.password);
+            console.log(req.body.email);
+            res.status(422).json({'err': 'El correo electrónico y/o la contraseña introducidos no son correctos.'});
         } else {
-            console.log('Has iniciado sesióin correctamente.');
-            res.status(200).json({'success': 'Has iniciado sesión correctamente.'});
+            var tokenData = {
+                id: user.id,
+                nombre: user.nombre,
+                nick: user.nick,
+                email: user.email,
+                image: user.image,
+                rol: user.rol
+            }
+            var token = jwt.sign(tokenData, 'Secret Password', {
+                expiresIn: 60 * 60 * 24 // El token expira en 24 horas.
+            })
+            console.log('Has iniciado sesión correctamente.');
+            res.status(200).json({token});
         }
     });
 }
