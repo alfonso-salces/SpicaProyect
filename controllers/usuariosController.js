@@ -62,12 +62,12 @@ usersController.login = async(req, res, next) => {
             console.log('El correo electrónico y/o la contraseña introducidos no son correctos.');
             console.log(req.body.password);
             console.log(req.body.email);
-            res.status(422).json({'error': 'El correo electrónico y/o la contraseña introducidos no son correctos.'});
+            res.status(422).json('El correo electrónico y/o la contraseña introducidos no son correctos.');
         } else if (!user.validPassword(req.body.password)) {
             console.log('La contraseña introducida no es correcta.');
             console.log(req.body.password);
             console.log(req.body.email);
-            res.status(422).json({'err': 'El correo electrónico y/o la contraseña introducidos no son correctos.'});
+            res.status(422).json('El correo electrónico y/o la contraseña introducidos no son correctos.');
         } else {
             var tokenData = {
                 id: user.id,
@@ -77,7 +77,7 @@ usersController.login = async(req, res, next) => {
                 image: user.image,
                 rol: user.rol
             }
-            var token = jwt.sign(tokenData, 'Secret Password', {
+            var token = jwt.sign(tokenData, process.env.JWT_SECRET, {
                 expiresIn: 60 * 60 * 24 // El token expira en 24 horas.
             })
             console.log('Has iniciado sesión correctamente.');
@@ -130,7 +130,16 @@ usersController.allUsers = async(req, res, next) => {
 }
 
 usersController.getUser = async(req, res, next) => {
-    var usuario = await Usuario.findOne({ where: { id: req.params.id }});
+    if(!req.headers.authorization) {
+        return res
+            .status(403)
+            .send({message: "Tu petición no tiene cabecera de autorización"});
+    }
+
+    var auth = req.headers.authorization.split(" ")[1];
+    var payload = jwt.decode(auth, process.env.JWT_SECRET);
+    
+    var usuario = await Usuario.findOne({attributes: ['id', 'email', 'nick', 'nombre', 'image', 'rol', 'createdAt']}, { where: { id: payload.id }});
     if(usuario) {
         res.json(usuario);
     } else {

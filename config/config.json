@@ -2,14 +2,14 @@
     "development": {
         "PORT": 3000,
         "SQLITE_URI": "db/database.sqlite",
-        "JWT_SECRET": "SECRET#0201",
+        "JWT_SECRET": "Secret Password",
         "JWT_EXP": "10m",
         "urlImagen": "/public/img/uploads"
     },
     "production": {
         "PORT": 80,
         "SQLITE_URI": "db/database.sqlite",
-        "JWT_SECRET": "SECRET#0201",
+        "JWT_SECRET": "Secret Password",
         "JWT_EXP": "2m"
     }
 }
