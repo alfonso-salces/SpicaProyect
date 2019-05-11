@@ -32,6 +32,7 @@ usersController.createUser = async(req, res, next) => {
                     password: req.body.password,
                     nombre: req.body.nombre,
                     image: req.file.filename,
+                    rol: req.body.rol,
                 })
                 .then(
                     console.log(req.file.filename),

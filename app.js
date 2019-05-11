@@ -29,6 +29,7 @@ var app = express();
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(cors());
+
 const storage = multer.diskStorage({
   destination: path.join(__dirname, process.env.urlImagen),
   limits: { fileSize: 10 * 1024 * 1024 },
@@ -39,6 +40,7 @@ const storage = multer.diskStorage({
     }
   },
 });
+
 app.use(multer({storage}).single('image'));
 app.use(rtsIndex);
 

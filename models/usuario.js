@@ -79,6 +79,7 @@ class Usuarios extends Model {}
       type: sequelize.STRING,
       allowNull: false,
       notEmpty: true,
+      defaultValue: 'usuario',
     },
     saltSecret: {
       type: sequelize.STRING
