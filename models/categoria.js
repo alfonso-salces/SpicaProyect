@@ -33,6 +33,10 @@ class Categorias extends Model {}
   freezeTableName: true,
 });
 
+Categorias.associate = (models) => {
+  Categorias.hasMany(models.Noticias.id, {foreignKey: 'ID', as: 'Noticia'});
+};
+
 module.exports = {
     Categorias,
 }

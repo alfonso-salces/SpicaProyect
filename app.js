@@ -33,6 +33,9 @@ app.use(cors());
 const storage = multer.diskStorage({
   destination: path.join(__dirname, process.env.urlImagen),
   limits: { fileSize: 10 * 1024 * 1024 },
+  onError: function(res) {
+    res.status(403).json({'error': 'Acceso denegado.'});
+  },
   filename: (req, file, cb, filename) => {
     var extension = (path.extname(file.originalname).split(".")[1]);
     if(extension == 'jpg' || extension == 'jpeg' || extension == 'png') {

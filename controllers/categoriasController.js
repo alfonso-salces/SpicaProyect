@@ -207,44 +207,36 @@ categoryController.editCategory = async(req, res, next) => {
     var payload = jwt.decode(auth, process.env.JWT_SECRET);
     if(payload) {
         await Usuario.findOne({where: {id: payload.id}}).then( async function(comprobante) {
-            if(comprobante){
+            if(comprobante) {
                 if(comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
                     res.status(403).json({'error': 'Acceso denegado.'});
                 } else {
-                    await Categoria.findOne({ where: { id: req.params.id } }).then(async function (category) {
-                        if(!category){
-                            res.status(422).json('Ha ocurrido un error.');
-                        } else{
-                            const ext = req.file.filename.split(".")[1];
-                
-                            if(ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
-                                await Categoria.update({
+                    const ext = req.file.filename.split(".")[1];
+                    if(ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
+                        await Categoria.findOne({ where: { id: req.params.id} }).then(async function (categoriaAct) {
+                            if(categoriaAct) {
+                                let old_pic = categoriaAct.image;
+                                await categoriaAct.update({
                                     nombre: req.body.nombre,
                                     image: req.file.filename,
                                 })
-                                .then(() => async function() {
+                                .then(async function() {
+                                    fs.unlinkSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + old_pic));
+                                    fs.renameSync(path.join("./", process.env.urlImagen + "/" + req.file.filename), path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + req.file.filename));
                                     res.json(
                                         "Categoria actualizada correctamente."
-                                    ),
-                                    await Categoria.findOne({ where: { id: req.params.id} }).then(function (category) {
-                                        if(!fs.existsSync(path.join("./", process.env.urlImagen + "/categorias"))) fs.mkdirSync(path.join("./", process.env.urlImagen + "/categorias"));
-                                        if(!fs.existsSync(path.join("./", process.env.urlImagen + "/categorias/") + category.id)) fs.mkdirSync(path.join("./", process.env.urlImagen + "/categorias/") + category.id);
-                                        fs.renameSync(path.join("./", process.env.urlImagen + "/" + req.file.filename), path.join("./", process.env.urlImagen + "/categorias/" + category.id + "/" + req.file.filename));
-                                    })
-                                }).catch(err => res.status(400).json(err.msg));
-                            } else {
-                                res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg o png.'});
-                            }
-                        }
-                        
-                    })
+                                    );
+                                }).catch(err => res.status(400).json(err));
+                        }}).catch(err => res.status(400).json(err));
+                    }
                 }
+            } else {
+                onError();
             }
-        }).catch(err => res.status(400).json(err.msg));
-    } else {
-        res.status(403).json({'error': 'Acceso denegado.'});
+        })
     }
 }
+
 
 /**
  *  Retorna una categoría específica.
