@@ -32,11 +32,13 @@ categoryController.createCategory = async(req, res, next) => {
         await Usuario.findOne({where: {id: payload.id}}).then( async function(comprobante) {
             if(comprobante){
                 if(comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
+                    fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                     res.status(403).json({'error': 'Acceso denegado.'});
                 } else {
                     await Categoria.findOne({ where: { nombre: req.body.nombre } }).then(async function (category) {
 
                         if(category){
+                            fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                             res.status(422).json('Ha ocurrido un error.');
                         } else{
                 
@@ -60,6 +62,7 @@ categoryController.createCategory = async(req, res, next) => {
                                     )
                                 .catch(err => res.status(400).json(err.msg));
                             } else {
+                                fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                                 res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg o png.'});
                             }
                         }
@@ -69,6 +72,7 @@ categoryController.createCategory = async(req, res, next) => {
             }
         }).catch(err => res.status(400).json(err.msg));
     } else {
+        fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
         res.status(403).json({'error': 'Acceso denegado.'});
     }
 
@@ -110,8 +114,7 @@ categoryController.deleteCategory = async(req, res, next) => {
                             res.status(404).json({'success': 'No existe la categoria especificada.'});
                         }
                     });
-                
-                    console.log(imagenCategoria);
+
                     await Categoria.destroy({ where: {id: req.params.id}}).then(async function(rowDeleted) {
                         if(rowDeleted === 1){
                             try {
@@ -209,6 +212,7 @@ categoryController.editCategory = async(req, res, next) => {
         await Usuario.findOne({where: {id: payload.id}}).then( async function(comprobante) {
             if(comprobante) {
                 if(comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
+                    fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                     res.status(403).json({'error': 'Acceso denegado.'});
                 } else {
                     const ext = req.file.filename.split(".")[1];
@@ -228,6 +232,9 @@ categoryController.editCategory = async(req, res, next) => {
                                     );
                                 }).catch(err => res.status(400).json(err));
                         }}).catch(err => res.status(400).json(err));
+                    } else {
+                        fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
+                        res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg o png.'});
                     }
                 }
             } else {
