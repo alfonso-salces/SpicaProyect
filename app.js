@@ -37,10 +37,7 @@ const storage = multer.diskStorage({
     res.status(403).json({'error': 'Acceso denegado.'});
   },
   filename: (req, file, cb, filename) => {
-    var extension = (path.extname(file.originalname).split(".")[1]);
-    if(extension == 'jpg' || extension == 'jpeg' || extension == 'png') {
-      cb(null, randomNumber() + path.extname(file.originalname));
-    }
+    cb(null, randomNumber() + path.extname(file.originalname));
   },
 });
 
