@@ -1,6 +1,7 @@
 const sequelize = require('sequelize');
 const db = require('../models/db');
 const Model = sequelize.Model;
+const Noticia = require('./noticia').Noticias;
 
 class Categorias extends Model {}
   Categorias.init({

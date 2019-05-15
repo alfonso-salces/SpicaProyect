@@ -31,19 +31,18 @@ categoryController.createCategory = async(req, res, next) => {
     if(payload) {
         await Usuario.findOne({where: {id: payload.id}}).then( async function(comprobante) {
             if(comprobante){
+                
                 if(comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
                     fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                     res.status(403).json({'error': 'Acceso denegado.'});
                 } else {
+                   
                     await Categoria.findOne({ where: { nombre: req.body.nombre } }).then(async function (category) {
-
                         if(category){
                             fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
-                            res.status(422).json('Ha ocurrido un error.');
+                            res.status(422).json({'error' : 'Ha ocurrido un error.'});
                         } else{
-                
                             const ext = req.file.filename.split(".")[1];
-                
                             if(ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
                                 await Categoria.create({
                                     nombre: req.body.nombre,
@@ -63,12 +62,15 @@ categoryController.createCategory = async(req, res, next) => {
                                 .catch(err => res.status(400).json(err.msg));
                             } else {
                                 fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
-                                res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg o png.'});
+                                res.status(422).json({'error': 'Solo se admiten imágenes con formato jpg, jpeg o png.'});
                             }
                         }
                         
-                    })
+                    }).catch(err => res.status(400).json(err.msg));
                 }
+            } else {
+                fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
+                res.status(403).json({'error': 'Acceso denegado.'});
             }
         }).catch(err => res.status(400).json(err.msg));
     } else {
@@ -173,7 +175,7 @@ categoryController.allCategorys = async(req, res, next) => {
                     if(categorias.length > 0) {
                         res.json(categorias);
                     } else {
-                        res.status(400).json({'error': 'Ha ocurrido un error.'});
+                        res.status(400).json({'error': 'No hay categorías actualmente.'});
                     }
                 }
             }
@@ -279,12 +281,10 @@ categoryController.getCategory = async(req, res, next) => {
                     }
                 }
             }
-        }).catch(err => res.status(400).json(err.msg));
+        }).catch(err => res.status(400).json(err));
     } else {
         res.status(403).json({'error': 'Acceso denegado.'});
     }
-
-
 }
 
 module.exports = categoryController;

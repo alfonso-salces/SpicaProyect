@@ -55,10 +55,10 @@ class Noticias extends Model {}
 });
 
 Noticias.associate = (models) => {
-    Noticias.belongsTo(models.Categorias.id, {foreignKey: 'categoria_id', as: 'categoria'});
+  Noticias.belongsTo(models.Categoria.id, {foreignKey: 'categoria_id', as: 'Categoria'});
 };
 Noticias.associate = (models) => {
-    Noticias.belongsTo(models.Usuarios.id, {foreignKey: 'autor_id', as: 'usuario'});
+  Noticias.belongsTo(models.Usuario.id, {foreignKey: 'autor_id', as: 'Usuario'});
 };
 
 module.exports = {

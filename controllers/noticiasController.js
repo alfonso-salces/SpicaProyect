@@ -158,7 +158,7 @@ newsController.deleteNew = async(req, res, next) => {
  */
 
 newsController.getNew = async(req, res, next) => {
-    noticia = await Noticia.findOne({where: {id: req.body.id}}).then(async function(noti) {
+    await Noticia.findOne({where: {id: req.body.id}}).then(async function(noti) {
         if(noti) {
             res.json(noti);
         } else {
@@ -200,13 +200,12 @@ newsController.getNews = async(req, res, next) => {
 newsController.getNewsPerAuthorName = async(req, res, next) => {
 
     let autorCons;
-    await Usuario.findOne({where: {nombre: req.body.name}}).then(async function(autor){
+   await Usuario.findOne({where: {nombre: req.body.name}}).then(async function(autor){
         if(!autor) {
             res.status(404).json({'error': 'El autor introducido no existe.'});
         } else {
             autorCons = autor;
         }
-
         noticias = await Noticia.findAll({where: {autor_id: autorCons.id}}).then(async function(noti) {
             if(noti) {
                 res.json(noti);
@@ -214,7 +213,7 @@ newsController.getNewsPerAuthorName = async(req, res, next) => {
                 res.status(404).json({'error': 'No hay noticias creadas por ese autor.'});
             }
         }).catch(err => res.status(400).json(err.msg));
-    }).catch(err => res.status(400).json(err.msg));
+    }).catch(err => res.status(400).json(err));
 }
 
 /**
@@ -246,11 +245,6 @@ newsController.getNewsPerCategoryName = async(req, res, next) => {
         }).catch(err => res.status(400).json(err.msg));
     }).catch(err => res.status(400).json({'error': 'Bad request.'}));
 }
-
-newsController.getNewsPerDate = async(req, res, next) => {
-    
-}
-
 
 
 module.exports = newsController;
