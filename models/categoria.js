@@ -1,10 +1,12 @@
-const sequelize = require('sequelize');
-const db = require('../models/db');
+const sequelize = require("sequelize");
+const db = require("../models/db");
 const Model = sequelize.Model;
-const Noticia = require('./noticia').Noticias;
+const Noticia = require("./noticia").Noticias;
+const Notificacion = require("./notificacion").Notificaciones;
 
 class Categorias extends Model {}
-  Categorias.init({
+Categorias.init(
+  {
     id: {
       type: sequelize.INTEGER,
       primaryKey: true,
@@ -17,27 +19,37 @@ class Categorias extends Model {}
       notEmpty: true,
       validate: {
         notEmpty: {
-          msg: 'Debes de introducir un nombre de categoría.'
+          msg: "Debes de introducir un nombre de categoría."
         },
         notNull: {
-          msg: 'El valor introducido no puede ser nulo.'
-        },
+          msg: "El valor introducido no puede ser nulo."
+        }
       }
     },
     image: {
       type: sequelize.STRING,
       allowNull: false,
-      notEmpty: true,
+      notEmpty: true
       //defaultValue: 'default'
-    },
-}, { sequelize: db,
-  freezeTableName: true,
+    }
+  },
+  {
+    sequelize: db,
+    freezeTableName: true
+  }
+);
+
+Categorias.beforeCreate((categoria, options) => {
+  Notificacion.create({
+    titulo: "Nueva Categoría",
+    cuerpo: categoria.nombre
+  });
 });
 
-Categorias.associate = (models) => {
-  Categorias.hasMany(models.Noticias.id, {foreignKey: 'ID', as: 'Noticia'});
+Categorias.associate = models => {
+  Categorias.hasMany(models.Noticias.id, { foreignKey: "ID", as: "Noticia" });
 };
 
 module.exports = {
-    Categorias,
-}
+  Categorias
+};

@@ -259,31 +259,20 @@ categoryController.editCategory = async(req, res, next) => {
  */
 
 categoryController.getCategory = async(req, res, next) => {
-    if(!req.headers.authorization) {
-        return res
-            .status(403)
-            .send({message: "Tu petición no tiene cabecera de autorización"});
-    }
-
-    var auth = req.headers.authorization.split(" ")[1];
-    var payload = jwt.decode(auth, process.env.JWT_SECRET);
-    if(payload) {
-        await Usuario.findOne({where: {id: payload.id}}).then( async function(comprobante) {
-            if(comprobante){
-                if(comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
-                    res.status(403).json({'error': 'Acceso denegado.'});
-                } else {
-                    var categoria = await Categoria.findOne({ where: { id: req.params.id }});
-                    if(categoria) {
-                        res.json(categoria);
-                    } else {
-                        res.status(404).json({'error': 'Ha ocurrido un error.'});
-                    }
-                }
-            }
-        }).catch(err => res.status(400).json(err));
+    var categoria = await Categoria.findOne({ where: { id: req.params.id }});
+    if(categoria) {
+        res.json(categoria);
     } else {
-        res.status(403).json({'error': 'Acceso denegado.'});
+        res.status(404).json({'error': 'Ha ocurrido un error.'});
+    }
+}
+
+categoryController.getCategoryName = async(req, res, next) => {
+    var categoria = await Categoria.findOne({ where: { nombre: req.body.name }});
+    if(categoria) {
+        res.json(categoria);
+    } else {
+        res.status(404).json({'error': 'Ha ocurrido un error.'});
     }
 }
 

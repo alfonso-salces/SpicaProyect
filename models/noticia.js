@@ -1,11 +1,13 @@
-const sequelize = require('sequelize');
-const db = require('../models/db');
+const sequelize = require("sequelize");
+const db = require("../models/db");
 const Model = sequelize.Model;
-const Categoria = require('./categoria').Categorias;
-const Usuario = require('./usuario').Usuarios;
+const Categoria = require("./categoria").Categorias;
+const Usuario = require("./usuario").Usuarios;
+const Notificacion = require("./notificacion").Notificaciones;
 
 class Noticias extends Model {}
-  Noticias.init({
+Noticias.init(
+  {
     id: {
       type: sequelize.INTEGER,
       primaryKey: true,
@@ -18,49 +20,66 @@ class Noticias extends Model {}
       notEmpty: true,
       validate: {
         notEmpty: {
-          msg: 'Debes de introducir un titular de noticia.'
+          msg: "Debes de introducir un titular de noticia."
         },
         notNull: {
-          msg: 'El valor introducido no puede ser nulo.'
-        },
+          msg: "El valor introducido no puede ser nulo."
+        }
       }
     },
     contenido: {
-        type: sequelize.STRING(65000),
-        allowNull: false,
-        notEmpty: true,
-        validate: {
-          notEmpty: {
-            msg: 'Debes de introducir contenido para tu noticia.'
-          },
-          notNull: {
-            msg: 'El valor introducido no puede ser nulo.'
-          },
+      type: sequelize.STRING(65000),
+      allowNull: false,
+      notEmpty: true,
+      validate: {
+        notEmpty: {
+          msg: "Debes de introducir contenido para tu noticia."
+        },
+        notNull: {
+          msg: "El valor introducido no puede ser nulo."
         }
-      },
+      }
+    },
     image: {
       type: sequelize.STRING,
       allowNull: false,
-      notEmpty: true,
+      notEmpty: true
       //defaultValue: 'default'
     },
     categoria_id: {
-      type: sequelize.INTEGER,
+      type: sequelize.INTEGER
     },
     autor_id: {
-        type: sequelize.INTEGER,
-    },
-}, { sequelize: db,
-  freezeTableName: true,
+      type: sequelize.INTEGER
+    }
+  },
+  {
+    sequelize: db,
+    freezeTableName: true
+  }
+);
+
+Noticias.beforeCreate((noticia, options) => {
+  Notificacion.create({
+    titulo: "Nueva Noticia",
+    cuerpo: noticia.titular,
+    autor_id: noticia.autor_id
+  });
 });
 
-Noticias.associate = (models) => {
-  Noticias.belongsTo(models.Categoria.id, {foreignKey: 'categoria_id', as: 'Categoria'});
+Noticias.associate = models => {
+  Noticias.belongsTo(models.Categoria.id, {
+    foreignKey: "categoria_id",
+    as: "Categoria"
+  });
 };
-Noticias.associate = (models) => {
-  Noticias.belongsTo(models.Usuario.id, {foreignKey: 'autor_id', as: 'Usuario'});
+Noticias.associate = models => {
+  Noticias.belongsTo(models.Usuario.id, {
+    foreignKey: "autor_id",
+    as: "Usuario"
+  });
 };
 
 module.exports = {
-    Noticias,
-}
+  Noticias
+};
