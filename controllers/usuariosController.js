@@ -155,7 +155,6 @@ usersController.editUser = async (req, res, next) => {
       .send({ message: "Tu petición no tiene cabecera de autorización" });
   }
 
-  console.log(req.body);
   var auth = req.headers.authorization.split(" ")[1];
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
@@ -172,57 +171,70 @@ usersController.editUser = async (req, res, next) => {
               where: { id: req.params.id }
             }).then(async function (user) {
               if (user) {
-                const ext = req.file.filename.split(".")[1];
+                if (req.file !== undefined) {
+                  const ext = req.file.filename.split(".")[1];
 
-                if (ext == "jpg" || ext == "png" || ext == "jpeg") {
-                  let old_pic = user.image;
-                  await user
-                    .update({
-                      nick: req.body.nick,
-                      email: req.body.email,
-                      password: req.body.password,
-                      nombre: req.body.nombre,
-                      image: req.file.filename,
-                      rol: req.body.rol
-                    })
-                    .then(async function () {
-                      fs.unlinkSync(
-                        path.join(
-                          "./",
-                          process.env.urlImagen +
-                          "/usuarios/" +
-                          req.params.id +
-                          "/" +
-                          old_pic
-                        )
-                      );
-                      fs.renameSync(
-                        path.join(
-                          "./",
-                          process.env.urlImagen + "/" + req.file.filename
-                        ),
-                        path.join(
-                          "./",
-                          process.env.urlImagen +
-                          "/usuarios/" +
-                          req.params.id +
-                          "/" +
-                          req.file.filename
-                        )
-                      );
+                  if (ext == "jpg" || ext == "png" || ext == "jpeg") {
+                    let old_pic = user.image;
+                    await user
+                      .update({
+                        nick: req.body.nick,
+                        email: req.body.email,
+                        password: req.body.password,
+                        nombre: req.body.nombre,
+                        image: req.file.filename,
+                        rol: req.body.rol
+                      })
+                      .then(async function () {
+                        fs.unlinkSync(
+                          path.join(
+                            "./",
+                            process.env.urlImagen +
+                            "/usuarios/" +
+                            req.params.id +
+                            "/" +
+                            old_pic
+                          )
+                        );
+                        fs.renameSync(
+                          path.join(
+                            "./",
+                            process.env.urlImagen + "/" + req.file.filename
+                          ),
+                          path.join(
+                            "./",
+                            process.env.urlImagen +
+                            "/usuarios/" +
+                            req.params.id +
+                            "/" +
+                            req.file.filename
+                          )
+                        );
+                        res.json("Usuario actualizado correctamente.");
+                      })
+                      .catch(err => res.status(400).json(err));
+                  } else {
+                    fs.unlinkSync(
+                      path.join(
+                        "./",
+                        process.env.urlImagen + "/" + req.file.filename
+                      )
+                    );
+                    res.status(422).json({
+                      error: "Solo se admiten imágenes con formato jpg o png."
+                    });
+                  }
+                } else {
+                  await user.update({
+                    nick: req.body.nick,
+                    email: req.body.email,
+                    password: req.body.password,
+                    nombre: req.body.nombre,
+                  })
+                    .then(function () {
                       res.json("Usuario actualizado correctamente.");
                     })
                     .catch(err => res.status(400).json(err));
-                } else {
-                  fs.unlinkSync(
-                    path.join(
-                      "./",
-                      process.env.urlImagen + "/" + req.file.filename
-                    )
-                  );
-                  res.status(422).json({
-                    error: "Solo se admiten imágenes con formato jpg o png."
-                  });
                 }
               } else {
                 fs.unlinkSync(
@@ -409,7 +421,7 @@ usersController.allUsers = async (req, res, next) => {
   }
 };
 
-usersController.getUser = async (req, res, next) => {
+usersController.getProfile = async (req, res, next) => {
   if (!req.headers.authorization) {
     return res
       .status(403)

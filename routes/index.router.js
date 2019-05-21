@@ -11,7 +11,7 @@ const notificationController = require("../controllers/notificacionesController"
 router.post("/api/register", usersController.createUser);
 router.post("/api/login", usersController.login);
 router.get("/api/users", usersController.allUsers);
-router.get("/api/profile", usersController.getUser);
+router.get("/api/profile", usersController.getProfile);
 router.delete("/api/users/:id", usersController.delete);
 router.put("/api/users/:id", usersController.editUser);
 
