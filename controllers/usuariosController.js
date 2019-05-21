@@ -31,7 +31,7 @@ usersController.createUser = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "moderador") {
             fs.unlinkSync(
@@ -41,7 +41,7 @@ usersController.createUser = async (req, res, next) => {
           } else {
             await Usuario.findOne({
               where: { email: req.body.email }
-            }).then(async function(user) {
+            }).then(async function (user) {
               if (user) {
                 fs.unlinkSync(
                   path.join(
@@ -66,7 +66,7 @@ usersController.createUser = async (req, res, next) => {
                       res.json("Usuario creado correctamente."),
                       await Usuario.findOne({
                         where: { email: req.body.email }
-                      }).then(function(user) {
+                      }).then(function (user) {
                         if (
                           !fs.existsSync(
                             path.join("./", process.env.urlImagen + "/usuarios")
@@ -97,10 +97,10 @@ usersController.createUser = async (req, res, next) => {
                           path.join(
                             "./",
                             process.env.urlImagen +
-                              "/usuarios/" +
-                              user.id +
-                              "/" +
-                              req.file.filename
+                            "/usuarios/" +
+                            user.id +
+                            "/" +
+                            req.file.filename
                           )
                         );
                       })
@@ -160,7 +160,7 @@ usersController.editUser = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "moderador") {
             fs.unlinkSync(
@@ -170,7 +170,7 @@ usersController.editUser = async (req, res, next) => {
           } else {
             await Usuario.findOne({
               where: { id: req.params.id }
-            }).then(async function(user) {
+            }).then(async function (user) {
               if (user) {
                 const ext = req.file.filename.split(".")[1];
 
@@ -185,15 +185,15 @@ usersController.editUser = async (req, res, next) => {
                       image: req.file.filename,
                       rol: req.body.rol
                     })
-                    .then(async function() {
+                    .then(async function () {
                       fs.unlinkSync(
                         path.join(
                           "./",
                           process.env.urlImagen +
-                            "/usuarios/" +
-                            req.params.id +
-                            "/" +
-                            old_pic
+                          "/usuarios/" +
+                          req.params.id +
+                          "/" +
+                          old_pic
                         )
                       );
                       fs.renameSync(
@@ -204,10 +204,10 @@ usersController.editUser = async (req, res, next) => {
                         path.join(
                           "./",
                           process.env.urlImagen +
-                            "/usuarios/" +
-                            req.params.id +
-                            "/" +
-                            req.file.filename
+                          "/usuarios/" +
+                          req.params.id +
+                          "/" +
+                          req.file.filename
                         )
                       );
                       res.json("Usuario actualizado correctamente.");
@@ -247,7 +247,7 @@ usersController.editUser = async (req, res, next) => {
 };
 
 usersController.login = async (req, res, next) => {
-  await Usuario.findOne({ where: { email: req.body.email } }).then(function(
+  await Usuario.findOne({ where: { email: req.body.email } }).then(function (
     user
   ) {
     if (!user) {
@@ -299,7 +299,7 @@ usersController.delete = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "moderador") {
             res.status(403).json({ error: "Acceso denegado." });
@@ -307,7 +307,7 @@ usersController.delete = async (req, res, next) => {
             var imagenUsuario;
             await Usuario.findOne({
               where: { id: req.params.id }
-            }).then(async function(user) {
+            }).then(async function (user) {
               if (user) {
                 imagenUsuario = user.image;
               } else {
@@ -320,17 +320,17 @@ usersController.delete = async (req, res, next) => {
 
             console.log(imagenUsuario);
             await Usuario.destroy({ where: { id: req.params.id } }).then(
-              async function(rowDeleted) {
+              async function (rowDeleted) {
                 if (rowDeleted === 1) {
                   try {
                     fs.unlinkSync(
                       path.join(
                         "./",
                         process.env.urlImagen +
-                          "/usuarios/" +
-                          req.params.id +
-                          "/" +
-                          imagenUsuario
+                        "/usuarios/" +
+                        req.params.id +
+                        "/" +
+                        imagenUsuario
                       )
                     );
                     fs.rmdirSync(
@@ -354,7 +354,7 @@ usersController.delete = async (req, res, next) => {
                     .json({ success: "No existe el usuario especificado." });
                 }
               },
-              function(err) {
+              function (err) {
                 console.log(err);
                 res.status(400).json({ error: "Ha ocurrido un error." });
               }
@@ -379,7 +379,7 @@ usersController.allUsers = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "moderador") {
             res.status(403).json({ error: "Acceso denegado." });
@@ -421,7 +421,7 @@ usersController.getUser = async (req, res, next) => {
   if (payload) {
     console.log(req.body.id);
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (
             comprobante.rol != "admin" ||
