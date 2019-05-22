@@ -210,7 +210,18 @@ usersController.editUser = async (req, res, next) => {
                             req.file.filename
                           )
                         );
-                        res.json("Usuario actualizado correctamente.");
+                        var tokenData = {
+                          id: user.id,
+                          nombre: user.nombre,
+                          nick: user.nick,
+                          email: user.email,
+                          image: user.image,
+                          rol: user.rol
+                        };
+                        var token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+                          expiresIn: 60 * 60 * 24 // El token expira en 24 horas.
+                        });
+                        res.status(200).json({ token });
                       })
                       .catch(err => res.status(400).json(err));
                   } else {
@@ -232,7 +243,18 @@ usersController.editUser = async (req, res, next) => {
                     nombre: req.body.nombre,
                   })
                     .then(function () {
-                      res.json("Usuario actualizado correctamente.");
+                      var tokenData = {
+                        id: user.id,
+                        nombre: user.nombre,
+                        nick: user.nick,
+                        email: user.email,
+                        image: user.image,
+                        rol: user.rol
+                      };
+                      var token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+                        expiresIn: 60 * 60 * 24 // El token expira en 24 horas.
+                      });
+                      res.status(200).json({ token });
                     })
                     .catch(err => res.status(400).json(err));
                 }
