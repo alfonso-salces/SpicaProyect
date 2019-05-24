@@ -17,11 +17,11 @@ router.put("/api/users/:id", usersController.editUser);
 
 // RUTAS CATEGORIAS.
 router.post("/api/createCategory", categoryController.createCategory);
-router.put("/api/category/:id", categoryController.editCategory);
-router.get("/api/category", categoryController.allCategorys);
+router.put("/api/editcategory/:id", categoryController.editCategory);
+router.get("/api/categories", categoryController.allCategorys);
 router.get("/api/categoryname", categoryController.getCategoryName);
 router.get("/api/category/:id", categoryController.getCategory);
-router.delete("/api/category/:id", categoryController.deleteCategory);
+router.delete("/api/deletecategory/:id", categoryController.deleteCategory);
 
 // RUTAS NOTICIAS.
 router.post("/api/createnew", newsController.createNew);
@@ -50,7 +50,7 @@ router.post(
   notificationController.createNotification
 );
 router.delete(
-  "/api/notification/:id",
+  "/api/deletenotification/:id",
   notificationController.deleteNotification
 );
 
