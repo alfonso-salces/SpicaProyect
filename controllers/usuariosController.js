@@ -183,7 +183,6 @@ usersController.editUser = async (req, res, next) => {
                         password: req.body.password,
                         nombre: req.body.nombre,
                         image: req.file.filename,
-                        rol: req.body.rol
                       })
                       .then(async function () {
                         fs.unlinkSync(
@@ -288,8 +287,6 @@ usersController.login = async (req, res, next) => {
       console.log(
         "El correo electrónico y/o la contraseña introducidos no son correctos."
       );
-      console.log(req.body.password);
-      console.log(req.body.email);
       res
         .status(422)
         .json(
