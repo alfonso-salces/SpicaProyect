@@ -49,15 +49,14 @@ categoryController.createCategory = async (req, res, next) => {
                                     image: req.file.filename,
                                 })
                                     .then(
-                                        console.log(req.file.filename),
-                                        res.json(
-                                            "Categoria creada correctamente."
-                                        ),
                                         await Categoria.findOne({ where: { nombre: req.body.nombre } }).then(function (category) {
                                             if (!fs.existsSync(path.join("./", process.env.urlImagen + "/categorias"))) fs.mkdirSync(path.join("./", process.env.urlImagen + "/categorias"));
                                             if (!fs.existsSync(path.join("./", process.env.urlImagen + "/categorias/") + category.id)) fs.mkdirSync(path.join("./", process.env.urlImagen + "/categorias/") + category.id);
                                             fs.renameSync(path.join("./", process.env.urlImagen + "/" + req.file.filename), path.join("./", process.env.urlImagen + "/categorias/" + category.id + "/" + req.file.filename));
                                         }),
+                                        res.json(
+                                            "Categoria creada correctamente."
+                                        ),
                                     )
                                     .catch(err => res.status(400).json(err.msg));
                             } else {

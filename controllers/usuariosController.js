@@ -63,7 +63,6 @@ usersController.createUser = async (req, res, next) => {
                     rol: req.body.rol
                   })
                     .then(
-                      res.json("Usuario creado correctamente."),
                       await Usuario.findOne({
                         where: { email: req.body.email }
                       }).then(function (user) {
@@ -102,8 +101,11 @@ usersController.createUser = async (req, res, next) => {
                             "/" +
                             req.file.filename
                           )
+
                         );
+                        res.json("Usuario creado correctamente.")
                       })
+
                     )
                     .catch(err => res.status(400).json(err.msg));
                 } else {
