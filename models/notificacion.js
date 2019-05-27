@@ -43,6 +43,7 @@ Notificaciones.init(
 );
 
 Usuario.hasMany(Notificaciones, { foreignKey: 'autor_id' });
+Notificaciones.belongsTo(Usuario, { foreignKey: 'autor_id' });
 
 module.exports = {
   Notificaciones

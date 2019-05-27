@@ -26,10 +26,12 @@ Comentarios.init({
     }
   },
 }, {
-  sequelize: db,
+    sequelize: db,
     freezeTableName: true,
   });
 
+Comentarios.belongsTo(Usuario, { foreignKey: 'autor_id' });
+Comentarios.belongsTo(Noticia, { foreignKey: 'noticia_id' });
 Noticia.hasMany(Comentarios, { foreignKey: 'noticia_id' });
 Usuario.hasMany(Comentarios, { foreignKey: 'autor_id' });
 

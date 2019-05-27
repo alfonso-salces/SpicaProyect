@@ -14,7 +14,7 @@ notificationController.createNotification = async (req, res, next) => {
 
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (
             comprobante.rol != "admin" &&
@@ -42,31 +42,22 @@ notificationController.createNotification = async (req, res, next) => {
 };
 
 notificationController.getNotifications = async (req, res, next) => {
-  await Notificacion.findAll()
-    .then(function(notificaciones) {
-      if (notificaciones.length != 0) {
-        res.json(notificaciones);
-      } else {
-        res.status(400).json({ error: "No hay notificaciones actualmente." });
-      }
-    })
-    .catch(err =>
-      res.status(400).json({ error: "No hay notificaciones actualmente." })
-    );
+  await Notificacion.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre'] }] }).then(notificacion => {
+    if (notificacion) res.json(notificacion);
+    else res.status(400).json({ error: "No hay notificaciones actualmente." });
+  }).catch(err =>
+    res.status(400).json({ error: "Ha ocurrido un error." })
+  );
+
 };
 
 notificationController.getNotification = async (req, res, next) => {
-  await Notificacion.findOne({ where: { id: req.params.id } })
-    .then(function(notificacion) {
-      if (notificacion) {
-        res.json(notificacion);
-      } else {
-        res.status(400).json({ error: "No hay notificaciones actualmente." });
-      }
-    })
-    .catch(err =>
-      res.status(400).json({ error: "No hay notificaciones actualmente." })
-    );
+  await Notificacion.findOne({ where: { id: req.params.id }, include: [{ model: Usuario, attributes: ['id', 'nombre'] }] }).then(notificacion => {
+    if (notificacion) res.json(notificacion);
+    else res.status(400).json({ error: "No existe la notificacion especificada." });
+  }).catch(err =>
+    res.status(400).json({ error: "Ha ocurrido un error." })
+  );
 };
 
 notificationController.deleteNotification = async (req, res, next) => {
@@ -80,7 +71,7 @@ notificationController.deleteNotification = async (req, res, next) => {
 
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id } })
-      .then(async function(comprobante) {
+      .then(async function (comprobante) {
         if (comprobante) {
           if (
             comprobante.rol != "admin" &&
@@ -90,7 +81,7 @@ notificationController.deleteNotification = async (req, res, next) => {
             res.status(403).json({ error: "Acceso denegado." });
           } else {
             await Notificacion.findOne({ where: { id: req.params.id } }).then(
-              async function(notificacion) {
+              async function (notificacion) {
                 notificacion
                   .destroy()
                   .then(res.json("Notificación eliminada correctamente"))

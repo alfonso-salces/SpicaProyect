@@ -363,7 +363,7 @@ newsController.deleteNew = async (req, res, next) => {
 
 newsController.getNew = async (req, res, next) => {
 
-  await Noticia.findOne({ where: { id: req.body.id }, include: [{ model: Usuario, attributes: ['id', 'nombre'] }, { model: Categoria }] }).then(noticia => {
+  await Noticia.findOne({ where: { id: req.body.id }, include: [{ model: Usuario, attributes: ['id', 'nombre', 'image'] }, { model: Categoria }] }).then(noticia => {
     if (noticia) {
       res.status(200).json(noticia)
     } else {
@@ -383,7 +383,7 @@ newsController.getNew = async (req, res, next) => {
 
 newsController.getNews = async (req, res, next) => {
 
-  await Noticia.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre'] }, { model: Categoria }] }).then(noticia => {
+  await Noticia.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre', 'image'] }, { model: Categoria }] }).then(noticia => {
     if (noticia.length != 0) {
       res.status(200).json(noticia)
     } else {

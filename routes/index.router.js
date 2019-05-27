@@ -36,7 +36,6 @@ router.delete("/api/deletenew/:id", newsController.deleteNew);
 router.post("/api/createcomment", commentController.createComment);
 router.get("/api/comment/:id", commentController.getComment);
 router.get("/api/comments", commentController.allComments);
-router.get("/api/commentsautor/:id", commentController.getCommentsAutor);
 router.get("/api/commentsnew/:id", commentController.getCommentsNew);
 router.get("/api/commentsdate", commentController.getCommentsDate);
 router.put("/api/editcomment/:id", commentController.editComment);
