@@ -362,16 +362,15 @@ newsController.deleteNew = async (req, res, next) => {
  */
 
 newsController.getNew = async (req, res, next) => {
-  await Noticia.findOne({ where: { id: req.body.id } })
-    .then(async function (noti) {
-      if (noti) {
-        res.json(noti);
-      } else {
-        res.status(404).json({ error: "Esa noticia no existe." });
-      }
-    })
-    .catch(err => res.status(400).json({ error: "Bad request." }));
-};
+
+  await Noticia.findOne({ where: { id: req.body.id }, include: [{ model: Usuario, attributes: ['id', 'nombre'] }, { model: Categoria }] }).then(noticia => {
+    if (noticia) {
+      res.status(200).json(noticia)
+    } else {
+      res.status(404).json({ error: "No hay noticias." });
+    }
+  }).catch(err => res.status(400).json({ error: 'Bad request' }));
+}
 
 /**
  *
@@ -383,16 +382,15 @@ newsController.getNew = async (req, res, next) => {
  */
 
 newsController.getNews = async (req, res, next) => {
-  noticias = await Noticia.findAll()
-    .then(async function (noti) {
-      if (noti.length != 0) {
-        res.json(noti);
-      } else {
-        res.status(404).json({ error: "No hay noticias." });
-      }
-    })
-    .catch(err => res.status(400).json({ error: "Bad request." }));
-};
+
+  await Noticia.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre'] }, { model: Categoria }] }).then(noticia => {
+    if (noticia.length != 0) {
+      res.status(200).json(noticia)
+    } else {
+      res.status(404).json({ error: "No hay noticias." });
+    }
+  }).catch(err => res.status(400).json({ error: 'Bad request' }));
+}
 
 /**
  *
@@ -427,7 +425,7 @@ newsController.getNewsPerAuthorName = async (req, res, next) => {
         .catch(err => res.status(400).json(err.msg));
     })
     .catch(err => res.status(400).json(err));
-};
+}
 
 /**
  *
@@ -441,30 +439,34 @@ newsController.getNewsPerAuthorName = async (req, res, next) => {
  */
 
 newsController.getNewsPerCategoryName = async (req, res, next) => {
-  let CategoriaCons;
-  await Categoria.findOne({ where: { nombre: req.body.name } })
-    .then(async function (categoria) {
-      if (!categoria) {
-        res.status(404).json({ error: "La categoría introducida no existe." });
-      } else {
-        CategoriaCons = categoria;
-      }
+  // let CategoriaCons;
+  // await Categoria.findOne({ where: { nombre: req.body.name } })
+  //   .then(async function (categoria) {
+  //     if (!categoria) {
+  //       res.status(404).json({ error: "La categoría introducida no existe." });
+  //     } else {
+  //       CategoriaCons = categoria;
+  //     }
 
-      noticias = await Noticia.findAll({
-        where: { categoria_id: CategoriaCons.id }
-      })
-        .then(async function (noti) {
-          if (noti.length != 0) {
-            res.json(noti);
-          } else {
-            res
-              .status(404)
-              .json({ error: "No hay noticias en esa categoría." });
-          }
-        })
-        .catch(err => res.status(400).json(err.msg));
-    })
-    .catch(err => res.status(400).json({ error: "Bad request." }));
-};
+  //     noticias = await Noticia.findAll({
+  //       where: { categoria_id: CategoriaCons.id }
+  //     })
+  //       .then(async function (noti) {
+  //         if (noti.length != 0) {
+  //           res.json(noti);
+  //         } else {
+  //           res
+  //             .status(404)
+  //             .json({ error: "No hay noticias en esa categoría." });
+  //         }
+  //       })
+  //       .catch(err => res.status(400).json(err.msg));
+  //   })
+  //   .catch(err => res.status(400).json({ error: "Bad request." }));
+
+  await Categoria.findOne({ include: [{ model: Noticia }] }).then(
+    noticia => { res.status(200).json(noticia) }
+  ).catch(err => { console.log(err), res.status(400).json(err) });
+}
 
 module.exports = newsController;

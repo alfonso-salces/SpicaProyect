@@ -1,10 +1,9 @@
 const sequelize = require("sequelize");
 const db = require("../models/db");
 const Model = sequelize.Model;
-const Noticia = require("./noticia").Noticias;
 const Notificacion = require("./notificacion").Notificaciones;
 
-class Categorias extends Model {}
+class Categorias extends Model { }
 Categorias.init(
   {
     id: {
@@ -36,7 +35,7 @@ Categorias.init(
   {
     sequelize: db,
     freezeTableName: true
-  }
+  },
 );
 
 Categorias.beforeCreate((categoria, options) => {
@@ -46,10 +45,7 @@ Categorias.beforeCreate((categoria, options) => {
   });
 });
 
-Categorias.associate = models => {
-  Categorias.hasMany(models.Noticias.id, { foreignKey: "ID", as: "Noticia" });
-};
 
 module.exports = {
-  Categorias
+  Categorias,
 };

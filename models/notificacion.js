@@ -3,7 +3,7 @@ const db = require("../models/db");
 const Model = sequelize.Model;
 const Usuario = require("./usuario").Usuarios;
 
-class Notificaciones extends Model {}
+class Notificaciones extends Model { }
 Notificaciones.init(
   {
     id: {
@@ -38,19 +38,11 @@ Notificaciones.init(
         }
       }
     },
-    autor_id: {
-      type: sequelize.INTEGER
-    }
   },
   { sequelize: db, freezeTableName: true }
 );
 
-Notificaciones.associate = models => {
-  Notificaciones.belongsTo(models.Usuario.id, {
-    foreignKey: "autor_id",
-    as: "Usuario"
-  });
-};
+Usuario.hasMany(Notificaciones, { foreignKey: 'autor_id' });
 
 module.exports = {
   Notificaciones

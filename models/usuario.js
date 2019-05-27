@@ -4,7 +4,6 @@ const Model = sequelize.Model;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
 class Usuarios extends Model { }
 Usuarios.init({
   id: {
@@ -85,7 +84,7 @@ Usuarios.init({
     type: sequelize.STRING
   },
 }, {
-  sequelize: db,
+    sequelize: db,
     freezeTableName: true,
   });
 
@@ -106,6 +105,8 @@ Usuarios.beforeUpdate((user, options) => {
 Usuarios.prototype.validPassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
+
+//Noticia.hasMany(Usuarios, { foreignKey: 'autor_id' });
 
 module.exports = {
   Usuarios,

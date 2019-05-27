@@ -5,7 +5,7 @@ const Categoria = require("./categoria").Categorias;
 const Usuario = require("./usuario").Usuarios;
 const Notificacion = require("./notificacion").Notificaciones;
 
-class Noticias extends Model {}
+class Noticias extends Model { }
 Noticias.init(
   {
     id: {
@@ -46,12 +46,6 @@ Noticias.init(
       notEmpty: true
       //defaultValue: 'default'
     },
-    categoria_id: {
-      type: sequelize.INTEGER
-    },
-    autor_id: {
-      type: sequelize.INTEGER
-    }
   },
   {
     sequelize: db,
@@ -67,18 +61,10 @@ Noticias.beforeCreate((noticia, options) => {
   });
 });
 
-Noticias.associate = models => {
-  Noticias.belongsTo(models.Categoria.id, {
-    foreignKey: "categoria_id",
-    as: "Categoria"
-  });
-};
-Noticias.associate = models => {
-  Noticias.belongsTo(models.Usuario.id, {
-    foreignKey: "autor_id",
-    as: "Usuario"
-  });
-};
+Noticias.belongsTo(Usuario, { foreignKey: 'autor_id' });
+Noticias.belongsTo(Categoria, { foreignKey: 'categoria_id' });
+Usuario.hasMany(Noticias, { as: 'noticias', foreignKey: 'autor_id' });
+Categoria.hasMany(Noticias, { foreignKey: 'categoria_id' });
 
 module.exports = {
   Noticias
