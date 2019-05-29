@@ -439,33 +439,8 @@ newsController.getNewsPerAuthorName = async (req, res, next) => {
  */
 
 newsController.getNewsPerCategoryName = async (req, res, next) => {
-  // let CategoriaCons;
-  // await Categoria.findOne({ where: { nombre: req.body.name } })
-  //   .then(async function (categoria) {
-  //     if (!categoria) {
-  //       res.status(404).json({ error: "La categoría introducida no existe." });
-  //     } else {
-  //       CategoriaCons = categoria;
-  //     }
-
-  //     noticias = await Noticia.findAll({
-  //       where: { categoria_id: CategoriaCons.id }
-  //     })
-  //       .then(async function (noti) {
-  //         if (noti.length != 0) {
-  //           res.json(noti);
-  //         } else {
-  //           res
-  //             .status(404)
-  //             .json({ error: "No hay noticias en esa categoría." });
-  //         }
-  //       })
-  //       .catch(err => res.status(400).json(err.msg));
-  //   })
-  //   .catch(err => res.status(400).json({ error: "Bad request." }));
-
-  await Categoria.findOne({ include: [{ model: Noticia }] }).then(
-    noticia => { res.status(200).json(noticia) }
+  await Categoria.findOne({ where: { id: req.params.id }, include: [{ model: Noticia }] }).then(
+    noticia => { res.json(noticia) }
   ).catch(err => { console.log(err), res.status(400).json(err) });
 }
 

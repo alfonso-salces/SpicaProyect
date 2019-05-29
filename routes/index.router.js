@@ -28,7 +28,7 @@ router.delete("/api/deletecategory/:id", categoryController.deleteCategory);
 router.post("/api/createnew", newsController.createNew);
 router.get("/api/newid", newsController.getNew);
 router.get("/api/newauthorname", newsController.getNewsPerAuthorName);
-router.get("/api/newaategoryname", newsController.getNewsPerCategoryName);
+router.get("/api/newcategoryname/:id", newsController.getNewsPerCategoryName);
 router.get("/api/news", newsController.getNews);
 router.put("/api/editnew/:id", newsController.editNew);
 router.delete("/api/deletenew/:id", newsController.deleteNew);
