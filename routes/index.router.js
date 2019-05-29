@@ -12,8 +12,9 @@ router.post("/api/register", usersController.createUser);
 router.post("/api/login", usersController.login);
 router.get("/api/users", usersController.allUsers);
 router.get("/api/profile", usersController.getProfile);
-router.delete("/api/users/:id", usersController.delete);
+router.post("/api/userdisable/:id", usersController.disable);
 router.put("/api/users/:id", usersController.editUser);
+router.post("/api/registerAPP", usersController.createUserAPP);
 
 // RUTAS CATEGORIAS.
 router.post("/api/createCategory", categoryController.createCategory);

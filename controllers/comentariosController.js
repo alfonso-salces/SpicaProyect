@@ -98,7 +98,7 @@ commentController.editComment = async (req, res, next) => {
   var auth = req.headers.authorization.split(" ")[1];
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
-    await Usuario.findOne({ where: { id: payload.id } })
+    await Usuario.findOne({ where: { id: payload.id, active: 1 } })
       .then(async function (comprobante) {
         if (comprobante) {
           if (
@@ -151,7 +151,7 @@ commentController.deleteComment = async (req, res, next) => {
   var auth = req.headers.authorization.split(" ")[1];
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
-    await Usuario.findOne({ where: { id: payload.id } })
+    await Usuario.findOne({ where: { id: payload.id, active: 1 } })
       .then(async function (comprobante) {
         if (comprobante) {
           if (

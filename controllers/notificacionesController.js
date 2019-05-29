@@ -13,7 +13,7 @@ notificationController.createNotification = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
 
   if (payload) {
-    await Usuario.findOne({ where: { id: payload.id } })
+    await Usuario.findOne({ where: { id: payload.id, active: 1 } })
       .then(async function (comprobante) {
         if (comprobante) {
           if (
@@ -70,7 +70,7 @@ notificationController.deleteNotification = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
 
   if (payload) {
-    await Usuario.findOne({ where: { id: payload.id } })
+    await Usuario.findOne({ where: { id: payload.id, active: 1 } })
       .then(async function (comprobante) {
         if (comprobante) {
           if (

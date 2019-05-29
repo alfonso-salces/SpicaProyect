@@ -80,6 +80,12 @@ Usuarios.init({
     notEmpty: true,
     defaultValue: 'usuario',
   },
+  active: {
+    type: sequelize.INTEGER,
+    allowNull: false,
+    notEmpty: true,
+    defaultValue: 1
+  },
   saltSecret: {
     type: sequelize.STRING
   },

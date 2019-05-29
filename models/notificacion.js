@@ -42,8 +42,45 @@ Notificaciones.init(
   { sequelize: db, freezeTableName: true }
 );
 
+Notificaciones.beforeCreate((notificacion, options) => {
+  var message = {
+    app_id: "9b7263ad-0b1b-4a8b-947c-430d5955058a",
+    headings: { "en": notificacion.titulo },
+    contents: { "en": notificacion.cuerpo },
+    included_segments: ["All"]
+  };
+  sendNotification(message);
+});
+
 Usuario.hasMany(Notificaciones, { foreignKey: 'autor_id' });
 Notificaciones.belongsTo(Usuario, { foreignKey: 'autor_id' });
+
+var sendNotification = function (data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": "Basic YzdjYzQwZWQtMGQ2Ni00MzQ2LTk4MGQtYWQzZGMxZjY5MTZj"
+  };
+
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+
+  var https = require('https');
+  var req = https.request(options, function (res) {
+    res.on('data', function (data) {
+    });
+  });
+
+  req.on('error', function (e) {
+  });
+
+  req.write(JSON.stringify(data));
+  req.end();
+};
 
 module.exports = {
   Notificaciones

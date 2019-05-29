@@ -29,7 +29,7 @@ categoryController.createCategory = async (req, res, next) => {
     var auth = req.headers.authorization.split(" ")[1];
     var payload = jwt.decode(auth, process.env.JWT_SECRET);
     if (payload) {
-        await Usuario.findOne({ where: { id: payload.id } }).then(async function (comprobante) {
+        await Usuario.findOne({ where: { id: payload.id, active: 1 } }).then(async function (comprobante) {
             if (comprobante) {
 
                 if (comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
@@ -102,7 +102,7 @@ categoryController.deleteCategory = async (req, res, next) => {
     var payload = jwt.decode(auth, process.env.JWT_SECRET);
 
     if (payload) {
-        await Usuario.findOne({ where: { id: payload.id } }).then(async function (comprobante) {
+        await Usuario.findOne({ where: { id: payload.id, active: 1 } }).then(async function (comprobante) {
             if (comprobante) {
                 if (comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
                     res.status(403).json({ 'error': 'Acceso denegado.' });
@@ -188,7 +188,7 @@ categoryController.editCategory = async (req, res, next) => {
     var auth = req.headers.authorization.split(" ")[1];
     var payload = jwt.decode(auth, process.env.JWT_SECRET);
     if (payload) {
-        await Usuario.findOne({ where: { id: payload.id } }).then(async function (comprobante) {
+        await Usuario.findOne({ where: { id: payload.id, active: 1 } }).then(async function (comprobante) {
             if (comprobante) {
                 if (comprobante.rol != 'admin' && comprobante.rol != 'redactor') {
                     fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
