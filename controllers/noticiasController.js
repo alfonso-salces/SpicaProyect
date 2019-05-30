@@ -54,7 +54,7 @@ newsController.createNew = async (req, res, next) => {
               } else {
                 const ext = req.file.filename.split(".")[1];
 
-                if (ext == "jpg" || ext == "png" || ext == "jpeg") {
+                if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
                   await Noticia.create({
                     titular: req.body.titular,
                     contenido: req.body.contenido,
@@ -169,7 +169,7 @@ newsController.editNew = async (req, res, next) => {
                   .then(async function (noticia) {
                     const ext = req.file.filename.split(".")[1];
 
-                    if (ext == "jpg" || ext == "png" || ext == "jpeg") {
+                    if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
                       await noticia
                         .update({
                           titular: req.body.titular,

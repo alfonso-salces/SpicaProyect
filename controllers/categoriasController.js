@@ -43,7 +43,7 @@ categoryController.createCategory = async (req, res, next) => {
                             res.status(422).json({ 'error': 'Ha ocurrido un error.' });
                         } else {
                             const ext = req.file.filename.split(".")[1];
-                            if (ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
+                            if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
                                 await Categoria.create({
                                     nombre: req.body.nombre,
                                     image: req.file.filename,
@@ -194,31 +194,43 @@ categoryController.editCategory = async (req, res, next) => {
                     fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
                     res.status(403).json({ 'error': 'Acceso denegado.' });
                 } else {
-                    const ext = req.file.filename.split(".")[1];
-                    if (ext == 'jpg' || ext == 'png' || ext == 'jpeg') {
+                    if (req.file) {
+                        const ext = req.file.filename.split(".")[1];
+                        if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
+                            await Categoria.findOne({ where: { id: req.params.id } }).then(async function (categoriaAct) {
+                                if (categoriaAct) {
+                                    let old_pic = categoriaAct.image;
+                                    await categoriaAct.update({
+                                        nombre: req.body.nombre,
+                                        image: req.file.filename,
+                                    })
+                                        .then(async function () {
+                                            fs.unlinkSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + old_pic));
+                                            fs.renameSync(path.join("./", process.env.urlImagen + "/" + req.file.filename), path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + req.file.filename));
+                                            res.json(
+                                                "Categoria actualizada correctamente."
+                                            );
+                                        }).catch(err => res.status(400).json(err));
+                                }
+                            }).catch(err => res.status(400).json(err));
+                        } else {
+                            fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
+                            res.status(422).json({ 'error': 'Solo se admiten imágenes con formato jpg o png.' });
+                        }
+                    } else {
                         await Categoria.findOne({ where: { id: req.params.id } }).then(async function (categoriaAct) {
                             if (categoriaAct) {
-                                let old_pic = categoriaAct.image;
                                 await categoriaAct.update({
                                     nombre: req.body.nombre,
-                                    image: req.file.filename,
-                                })
-                                    .then(async function () {
-                                        fs.unlinkSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + old_pic));
-                                        fs.renameSync(path.join("./", process.env.urlImagen + "/" + req.file.filename), path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + req.file.filename));
-                                        res.json(
-                                            "Categoria actualizada correctamente."
-                                        );
-                                    }).catch(err => res.status(400).json(err));
+                                }).then(async function () {
+                                    res.json(
+                                        "Categoria actualizada correctamente."
+                                    );
+                                }).catch(err => res.status(400).json(err));
                             }
                         }).catch(err => res.status(400).json(err));
-                    } else {
-                        fs.unlinkSync(path.join("./", process.env.urlImagen + "/" + req.file.filename));
-                        res.status(422).json({ 'error': 'Solo se admiten imágenes con formato jpg o png.' });
                     }
                 }
-            } else {
-                onError();
             }
         })
     }

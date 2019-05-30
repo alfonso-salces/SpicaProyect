@@ -53,61 +53,65 @@ usersController.createUser = async (req, res, next) => {
               } else {
                 const ext = req.file.filename.split(".")[1];
 
-                if (ext == "jpg" || ext == "png" || ext == "jpeg") {
-                  await Usuario.create({
-                    nick: req.body.nick,
-                    email: req.body.email,
-                    password: req.body.password,
-                    nombre: req.body.nombre,
-                    image: req.file.filename,
-                    rol: req.body.rol
-                  })
-                    .then(
-                      await Usuario.findOne({
-                        where: { email: req.body.email }
-                      }).then(function (user) {
-                        if (
-                          !fs.existsSync(
-                            path.join("./", process.env.urlImagen + "/usuarios")
+                if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
+                  if (req.body.nick == '' || req.body.email == '' || req.body.password == '' || req.body.nombre == '' || req.body.rol == '') {
+                    res.status(422).json({ 'error': 'Rellena todos los campos.' });
+                  } else {
+                    await Usuario.create({
+                      nick: req.body.nick,
+                      email: req.body.email,
+                      password: req.body.password,
+                      nombre: req.body.nombre,
+                      image: req.file.filename,
+                      rol: req.body.rol
+                    })
+                      .then(
+                        await Usuario.findOne({
+                          where: { email: req.body.email }
+                        }).then(function (user) {
+                          if (
+                            !fs.existsSync(
+                              path.join("./", process.env.urlImagen + "/usuarios")
+                            )
                           )
-                        )
-                          fs.mkdirSync(
-                            path.join("./", process.env.urlImagen + "/usuarios")
-                          );
-                        if (
-                          !fs.existsSync(
+                            fs.mkdirSync(
+                              path.join("./", process.env.urlImagen + "/usuarios")
+                            );
+                          if (
+                            !fs.existsSync(
+                              path.join(
+                                "./",
+                                process.env.urlImagen + "/usuarios/"
+                              ) + user.id
+                            )
+                          )
+                            fs.mkdirSync(
+                              path.join(
+                                "./",
+                                process.env.urlImagen + "/usuarios/"
+                              ) + user.id
+                            );
+                          fs.renameSync(
                             path.join(
                               "./",
-                              process.env.urlImagen + "/usuarios/"
-                            ) + user.id
-                          )
-                        )
-                          fs.mkdirSync(
+                              process.env.urlImagen + "/" + req.file.filename
+                            ),
                             path.join(
                               "./",
-                              process.env.urlImagen + "/usuarios/"
-                            ) + user.id
+                              process.env.urlImagen +
+                              "/usuarios/" +
+                              user.id +
+                              "/" +
+                              req.file.filename
+                            )
+
                           );
-                        fs.renameSync(
-                          path.join(
-                            "./",
-                            process.env.urlImagen + "/" + req.file.filename
-                          ),
-                          path.join(
-                            "./",
-                            process.env.urlImagen +
-                            "/usuarios/" +
-                            user.id +
-                            "/" +
-                            req.file.filename
-                          )
+                          res.json("Usuario creado correctamente.")
+                        })
 
-                        );
-                        res.json("Usuario creado correctamente.")
-                      })
-
-                    )
-                    .catch(err => res.status(400).json(err.msg));
+                      )
+                      .catch(err => res.status(400).json(err.msg));
+                  }
                 } else {
                   fs.unlinkSync(
                     path.join(
@@ -151,7 +155,7 @@ usersController.createUserAPP = async (req, res, next) => {
     } else {
       const ext = req.file.filename.split(".")[1];
 
-      if (ext == "jpg" || ext == "png" || ext == "jpeg") {
+      if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
         await Usuario.create({
           nick: req.body.nick,
           email: req.body.email,
@@ -263,7 +267,7 @@ usersController.editUser = async (req, res, next) => {
                 if (req.file !== undefined) {
                   const ext = req.file.filename.split(".")[1];
 
-                  if (ext == "jpg" || ext == "png" || ext == "jpeg") {
+                  if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
                     let old_pic = user.image;
                     await user
                       .update({
