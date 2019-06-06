@@ -2,8 +2,9 @@ const sequelize = require("sequelize");
 const db = require("../models/db");
 const Model = sequelize.Model;
 const Notificacion = require("./notificacion").Notificaciones;
+const Usuario = require("./usuario").Usuarios;
 
-class Categorias extends Model { }
+class Categorias extends Model {}
 Categorias.init(
   {
     id: {
@@ -35,17 +36,20 @@ Categorias.init(
   {
     sequelize: db,
     freezeTableName: true
-  },
+  }
 );
+
+Categorias.belongsTo(Usuario, { foreignKey: "autor_id" });
+Usuario.hasMany(Categorias, { as: "categorias", foreignKey: "autor_id" });
 
 Categorias.beforeCreate((categoria, options) => {
   Notificacion.create({
     titulo: "Nueva Categoría",
-    cuerpo: categoria.nombre
+    cuerpo: categoria.nombre,
+    autor_id: categoria.autor_id
   });
 });
 
-
 module.exports = {
-  Categorias,
+  Categorias
 };

@@ -1,5 +1,6 @@
 const Categoria = require('../models/categoria').Categorias;
 const Usuario = require('../models/usuario').Usuarios;
+const Noticia = require('../models/noticia').Noticias;
 const categoryController = {};
 const fs = require('fs');
 const path = require('path');
@@ -46,6 +47,7 @@ categoryController.createCategory = async (req, res, next) => {
                             if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
                                 await Categoria.create({
                                     nombre: req.body.nombre,
+                                    autor_id: req.body.autor_id,
                                     image: req.file.filename,
                                 })
                                     .then(
@@ -116,15 +118,25 @@ categoryController.deleteCategory = async (req, res, next) => {
                         }
                     });
 
+                    let noticias;
+
+                    await Noticia.findAll({ where: {categoria_id: req.params.id} }).then(async function (notis) {
+                        noticias = notis;
+                    }).catch(err => res.status(400).json(err.msg));
+
                     await Categoria.destroy({ where: { id: req.params.id } }).then(async function (rowDeleted) {
                         if (rowDeleted === 1) {
                             try {
                                 fs.unlinkSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id + "/" + imagenCategoria));
-                                fs.rmdirSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id))
+                                fs.rmdirSync(path.join("./", process.env.urlImagen + "/categorias/" + req.params.id));
+                                noticias.forEach(noticia => {
+                                    fs.unlinkSync(path.join("./", process.env.urlImagen + "/noticias/" + noticia.id + "/" + noticia.image));
+                                    fs.rmdirSync(path.join("./", process.env.urlImagen + "/noticias/" + noticia.id));
+                                });
                             } catch (err) {
                                 console.log(err);
                             }
-                            console.log('Categoria eliminada correctamente.');
+
                             res.status(200).json({ 'success': 'Categoria eliminada correctamente.' });
                         } else {
                             console.log('No existe la categoria especificada.');
@@ -154,12 +166,13 @@ categoryController.deleteCategory = async (req, res, next) => {
  */
 
 categoryController.allCategorys = async (req, res, next) => {
-    var categorias = await Categoria.findAll();
-    if (categorias.length > 0) {
-        res.json(categorias);
-    } else {
-        res.status(400).json({ 'error': 'No hay categorías actualmente.' });
-    }
+    await Categoria.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre', 'image'] }] }).then(categoria => {
+        if (categoria.length != 0) {
+          res.status(200).json(categoria)
+        } else {
+          res.status(404).json({ error: "No hay categorías." });
+        }
+      }).catch(err => res.status(400).json({ error: 'Bad request' }));
 }
 
 /**
@@ -257,8 +270,8 @@ categoryController.getCategory = async (req, res, next) => {
     }
 }
 
-categoryController.getCategoryName = async (req, res, next) => {
-    var categoria = await Categoria.findOne({ where: { nombre: req.body.name } });
+categoryController.getCategorybyAutor = async (req, res, next) => {
+    var categoria = await Categoria.findOne({ where: { autor_id: req.body.autor_id } });
     if (categoria) {
         res.json(categoria);
     } else {

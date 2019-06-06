@@ -20,7 +20,7 @@ router.post("/api/registerAPP", usersController.createUserAPP);
 router.post("/api/createCategory", categoryController.createCategory);
 router.put("/api/editcategory/:id", categoryController.editCategory);
 router.get("/api/categories", categoryController.allCategorys);
-router.get("/api/categoryname", categoryController.getCategoryName);
+router.get("/api/categorybyautor", categoryController.getCategorybyAutor);
 router.get("/api/category/:id", categoryController.getCategory);
 router.delete("/api/deletecategory/:id", categoryController.deleteCategory);
 
