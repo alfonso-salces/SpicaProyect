@@ -7,7 +7,7 @@ const commentController = {};
 
 commentController.createComment = async (req, res, next) => {
   await Noticia.findOne({ where: { id: req.body.noticia_id } })
-    .then(async function (noticia) {
+    .then(async function(noticia) {
       if (noticia) {
         await Comentario.create({
           cuerpo: req.body.cuerpo,
@@ -26,29 +26,46 @@ commentController.createComment = async (req, res, next) => {
 };
 
 commentController.getComment = async (req, res, next) => {
-  await Comentario.findOne({ where: { id: req.params.id }, include: [{ model: Noticia }, { model: Usuario, attributes: ['id', 'nombre', 'image'] }] }).then(comentario => {
-    if (comentario) {
-      res.json(comentario);
-    } else {
-      res.status(404).json({ 'error': 'No existe ese comentario' });
-    }
-  }).catch(err => res.status(400).json({ error: "Ha ocurrido un error." }));
+  await Comentario.findOne({
+    where: { id: req.params.id },
+    include: [
+      { model: Noticia },
+      { model: Usuario, attributes: ["id", "nombre", "image"] }
+    ]
+  })
+    .then(comentario => {
+      if (comentario) {
+        res.json(comentario);
+      } else {
+        res.status(404).json({ error: "No existe ese comentario" });
+      }
+    })
+    .catch(err => res.status(400).json({ error: "Ha ocurrido un error." }));
 };
 
 commentController.allComments = async (req, res, next) => {
-  await Comentario.findAll({ include: [{ model: Noticia }, { model: Usuario, attributes: ['id', 'nombre', 'image'] }] }).then(comentario => {
-    if (comentario) {
-      res.json(comentario);
-    } else {
-      res.status(404).json({ 'error': 'No hay comentarios actualmente' });
-    }
-  }).catch(err => res.status(400).json({ error: "Ha ocurrido un error." }));
-
+  await Comentario.findAll({
+    include: [
+      { model: Noticia },
+      { model: Usuario, attributes: ["id", "nombre", "image"] }
+    ]
+  })
+    .then(comentario => {
+      if (comentario) {
+        res.json(comentario);
+      } else {
+        res.status(404).json({ error: "No hay comentarios actualmente" });
+      }
+    })
+    .catch(err => res.status(400).json({ error: "Ha ocurrido un error." }));
 };
 
 commentController.getCommentsNew = async (req, res, next) => {
-  await Comentario.findAll({ where: { noticia_id: req.params.id } })
-    .then(function (comentarios) {
+  await Comentario.findAll({
+    where: { noticia_id: req.params.id },
+    include: [{ model: Usuario, attributes: ["id", "nombre", "nick", "image"] }]
+  })
+    .then(function(comentarios) {
       if (comentarios.length != 0) {
         res.json(comentarios);
       } else {
@@ -72,7 +89,7 @@ commentController.getCommentsDate = async (req, res, next) => {
     }
   };
   await Comentario.findAll(consulta)
-    .then(function (comentarios) {
+    .then(function(comentarios) {
       if (comentarios.length != 0) {
         res.json(comentarios);
       } else {
@@ -99,7 +116,7 @@ commentController.editComment = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id, active: 1 } })
-      .then(async function (comprobante) {
+      .then(async function(comprobante) {
         if (comprobante) {
           if (
             comprobante.rol != "admin" &&
@@ -109,7 +126,7 @@ commentController.editComment = async (req, res, next) => {
             res.status(403).json({ error: "Acceso denegado." });
           } else {
             await Comentario.findOne({ where: { id: req.params.id } })
-              .then(async function (comment) {
+              .then(async function(comment) {
                 if (comment) {
                   await comment
                     .update({
@@ -152,7 +169,7 @@ commentController.deleteComment = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id, active: 1 } })
-      .then(async function (comprobante) {
+      .then(async function(comprobante) {
         if (comprobante) {
           if (
             comprobante.rol != "admin" &&
@@ -162,7 +179,7 @@ commentController.deleteComment = async (req, res, next) => {
             res.status(403).json({ error: "Acceso denegado." });
           } else {
             await Comentario.findOne({ where: { id: req.params.id } })
-              .then(async function (comment) {
+              .then(async function(comment) {
                 if (comment) {
                   await comment
                     .destroy()

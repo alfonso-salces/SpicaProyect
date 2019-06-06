@@ -29,7 +29,7 @@ newsController.createNew = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id, active: 1 } })
-      .then(async function (comprobante) {
+      .then(async function(comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "redactor") {
             fs.unlinkSync(
@@ -39,7 +39,7 @@ newsController.createNew = async (req, res, next) => {
           } else {
             await Categoria.findOne({
               where: { id: req.body.categoria_id }
-            }).then(async function (category) {
+            }).then(async function(category) {
               if (!category) {
                 fs.unlinkSync(
                   path.join(
@@ -54,7 +54,14 @@ newsController.createNew = async (req, res, next) => {
               } else {
                 const ext = req.file.filename.split(".")[1];
 
-                if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
+                if (
+                  ext == "jpg" ||
+                  ext == "png" ||
+                  ext == "jpeg" ||
+                  ext == "JPG" ||
+                  ext == "PNG" ||
+                  ext == "JPEG"
+                ) {
                   await Noticia.create({
                     titular: req.body.titular,
                     contenido: req.body.contenido,
@@ -65,7 +72,7 @@ newsController.createNew = async (req, res, next) => {
                     .then(
                       await Noticia.findOne({
                         where: { titular: req.body.titular }
-                      }).then(function (noticia) {
+                      }).then(function(noticia) {
                         if (
                           !fs.existsSync(
                             path.join("./", process.env.urlImagen + "/noticias")
@@ -96,13 +103,13 @@ newsController.createNew = async (req, res, next) => {
                           path.join(
                             "./",
                             process.env.urlImagen +
-                            "/noticias/" +
-                            noticia.id +
-                            "/" +
-                            req.file.filename
+                              "/noticias/" +
+                              noticia.id +
+                              "/" +
+                              req.file.filename
                           )
                         );
-                        res.json("Noticia creada correctamente")
+                        res.json("Noticia creada correctamente");
                       })
                     )
                     .catch(err => res.status(400).json(err.msg));
@@ -142,7 +149,7 @@ newsController.editNew = async (req, res, next) => {
   var payload = jwt.decode(auth, process.env.JWT_SECRET);
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id, active: 1 } })
-      .then(async function (comprobante) {
+      .then(async function(comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "redactor") {
             fs.unlinkSync(
@@ -152,7 +159,7 @@ newsController.editNew = async (req, res, next) => {
           } else {
             await Categoria.findOne({
               where: { id: req.body.categoria_id }
-            }).then(async function (category) {
+            }).then(async function(category) {
               if (!category) {
                 fs.unlinkSync(
                   path.join(
@@ -166,10 +173,17 @@ newsController.editNew = async (req, res, next) => {
                 });
               } else {
                 await Noticia.findOne({ where: { id: req.params.id } })
-                  .then(async function (noticia) {
+                  .then(async function(noticia) {
                     const ext = req.file.filename.split(".")[1];
 
-                    if (ext == "jpg" || ext == "png" || ext == "jpeg" || ext == "JPG" || ext == "PNG" || ext == "JPEG") {
+                    if (
+                      ext == "jpg" ||
+                      ext == "png" ||
+                      ext == "jpeg" ||
+                      ext == "JPG" ||
+                      ext == "PNG" ||
+                      ext == "JPEG"
+                    ) {
                       await noticia
                         .update({
                           titular: req.body.titular,
@@ -181,7 +195,7 @@ newsController.editNew = async (req, res, next) => {
                         .then(
                           await Noticia.findOne({
                             where: { titular: req.body.titular }
-                          }).then(function (noticia) {
+                          }).then(function(noticia) {
                             if (
                               !fs.existsSync(
                                 path.join(
@@ -218,15 +232,14 @@ newsController.editNew = async (req, res, next) => {
                               path.join(
                                 "./",
                                 process.env.urlImagen +
-                                "/noticias/" +
-                                noticia.id +
-                                "/" +
-                                req.file.filename
+                                  "/noticias/" +
+                                  noticia.id +
+                                  "/" +
+                                  req.file.filename
                               )
                             );
-                            res.json("Noticia actualizada correctamente")
+                            res.json("Noticia actualizada correctamente");
                           })
-
                         )
                         .catch(err => res.status(400).json(err.msg));
                     } else {
@@ -284,14 +297,14 @@ newsController.deleteNew = async (req, res, next) => {
 
   if (payload) {
     await Usuario.findOne({ where: { id: payload.id, active: 1 } })
-      .then(async function (comprobante) {
+      .then(async function(comprobante) {
         if (comprobante) {
           if (comprobante.rol != "admin" && comprobante.rol != "redactor") {
             res.status(403).json({ error: "Acceso denegado." });
           } else {
             var imagenNoticia;
             await Noticia.findOne({ where: { id: req.params.id } }).then(
-              async function (noticia) {
+              async function(noticia) {
                 if (noticia) {
                   imagenNoticia = noticia.image;
                 } else {
@@ -303,17 +316,17 @@ newsController.deleteNew = async (req, res, next) => {
             );
 
             await Noticia.destroy({ where: { id: req.params.id } }).then(
-              async function (rowDeleted) {
+              async function(rowDeleted) {
                 if (rowDeleted === 1) {
                   try {
                     fs.unlinkSync(
                       path.join(
                         "./",
                         process.env.urlImagen +
-                        "/noticias/" +
-                        req.params.id +
-                        "/" +
-                        imagenNoticia
+                          "/noticias/" +
+                          req.params.id +
+                          "/" +
+                          imagenNoticia
                       )
                     );
                     fs.rmdirSync(
@@ -336,7 +349,7 @@ newsController.deleteNew = async (req, res, next) => {
                     .json({ success: "No existe la noticia especificada." });
                 }
               },
-              function (err) {
+              function(err) {
                 console.log(err);
                 res.status(400).json({ error: "Ha ocurrido un error." });
               }
@@ -362,15 +375,22 @@ newsController.deleteNew = async (req, res, next) => {
  */
 
 newsController.getNew = async (req, res, next) => {
-
-  await Noticia.findOne({ where: { id: req.body.id }, include: [{ model: Usuario, attributes: ['id', 'nombre', 'image'] }, { model: Categoria }] }).then(noticia => {
-    if (noticia) {
-      res.status(200).json(noticia)
-    } else {
-      res.status(404).json({ error: "No hay noticias." });
-    }
-  }).catch(err => res.status(400).json({ error: 'Bad request' }));
-}
+  await Noticia.findOne({
+    where: { id: req.body.id },
+    include: [
+      { model: Usuario, attributes: ["id", "nombre", "image"] },
+      { model: Categoria }
+    ]
+  })
+    .then(noticia => {
+      if (noticia) {
+        res.status(200).json(noticia);
+      } else {
+        res.status(404).json({ error: "No hay noticias." });
+      }
+    })
+    .catch(err => res.status(400).json({ error: "Bad request" }));
+};
 
 /**
  *
@@ -382,15 +402,21 @@ newsController.getNew = async (req, res, next) => {
  */
 
 newsController.getNews = async (req, res, next) => {
-
-  await Noticia.findAll({ include: [{ model: Usuario, attributes: ['id', 'nombre', 'image'] }, { model: Categoria }] }).then(noticia => {
-    if (noticia.length != 0) {
-      res.status(200).json(noticia)
-    } else {
-      res.status(404).json({ error: "No hay noticias." });
-    }
-  }).catch(err => res.status(400).json({ error: 'Bad request' }));
-}
+  await Noticia.findAll({
+    include: [
+      { model: Usuario, attributes: ["id", "nombre", "image"] },
+      { model: Categoria }
+    ]
+  })
+    .then(noticia => {
+      if (noticia.length != 0) {
+        res.status(200).json(noticia);
+      } else {
+        res.status(404).json({ error: "No hay noticias." });
+      }
+    })
+    .catch(err => res.status(400).json({ error: "Bad request" }));
+};
 
 /**
  *
@@ -406,14 +432,14 @@ newsController.getNews = async (req, res, next) => {
 newsController.getNewsPerAuthorName = async (req, res, next) => {
   let autorCons;
   await Usuario.findOne({ where: { nombre: req.body.name } })
-    .then(async function (autor) {
+    .then(async function(autor) {
       if (!autor) {
         res.status(404).json({ error: "El autor introducido no existe." });
       } else {
         autorCons = autor;
       }
       noticias = await Noticia.findAll({ where: { autor_id: autorCons.id } })
-        .then(async function (noti) {
+        .then(async function(noti) {
           if (noti) {
             res.json(noti);
           } else {
@@ -425,7 +451,7 @@ newsController.getNewsPerAuthorName = async (req, res, next) => {
         .catch(err => res.status(400).json(err.msg));
     })
     .catch(err => res.status(400).json(err));
-}
+};
 
 /**
  *
@@ -438,10 +464,22 @@ newsController.getNewsPerAuthorName = async (req, res, next) => {
  *
  */
 
-newsController.getNewsPerCategoryName = async (req, res, next) => {
-  await Categoria.findOne({ where: { id: req.params.id }, include: [{ model: Noticia }] }).then(
-    noticia => { res.json(noticia) }
-  ).catch(err => { console.log(err), res.status(400).json(err) });
-}
+newsController.getNewsbyCategoryId = async (req, res, next) => {
+  await Noticia.findAll({
+    where: { categoria_id: req.params.id },
+    include: [
+      { model: Usuario, attributes: ["id", "nombre", "image"] },
+      { model: Categoria }
+    ]
+  })
+    .then(noticia => {
+      if (noticia.length != 0) {
+        res.status(200).json(noticia);
+      } else {
+        res.status(404).json({ error: "No hay noticias." });
+      }
+    })
+    .catch(err => res.status(400).json({ error: "Bad request" }));
+};
 
 module.exports = newsController;
