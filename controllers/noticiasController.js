@@ -174,84 +174,103 @@ newsController.editNew = async (req, res, next) => {
               } else {
                 await Noticia.findOne({ where: { id: req.params.id } })
                   .then(async function(noticia) {
-                    const ext = req.file.filename.split(".")[1];
+                    if (req.file) {
+                      const ext = req.file.filename.split(".")[1];
 
-                    if (
-                      ext == "jpg" ||
-                      ext == "png" ||
-                      ext == "jpeg" ||
-                      ext == "JPG" ||
-                      ext == "PNG" ||
-                      ext == "JPEG"
-                    ) {
+                      if (
+                        ext == "jpg" ||
+                        ext == "png" ||
+                        ext == "jpeg" ||
+                        ext == "JPG" ||
+                        ext == "PNG" ||
+                        ext == "JPEG"
+                      ) {
+                        await noticia
+                          .update({
+                            titular: req.body.titular,
+                            contenido: req.body.contenido,
+                            image: req.file.filename,
+                            categoria_id: req.body.categoria_id,
+                            autor_id: req.body.autor_id
+                          })
+                          .then(
+                            await Noticia.findOne({
+                              where: { titular: req.body.titular }
+                            }).then(function(noticia) {
+                              if (
+                                !fs.existsSync(
+                                  path.join(
+                                    "./",
+                                    process.env.urlImagen + "/noticias"
+                                  )
+                                )
+                              )
+                                fs.mkdirSync(
+                                  path.join(
+                                    "./",
+                                    process.env.urlImagen + "/noticias"
+                                  )
+                                );
+                              if (
+                                !fs.existsSync(
+                                  path.join(
+                                    "./",
+                                    process.env.urlImagen + "/noticias/"
+                                  ) + noticia.id
+                                )
+                              )
+                                fs.mkdirSync(
+                                  path.join(
+                                    "./",
+                                    process.env.urlImagen + "/noticias/"
+                                  ) + noticia.id
+                                );
+                              fs.renameSync(
+                                path.join(
+                                  "./",
+                                  process.env.urlImagen +
+                                    "/" +
+                                    req.file.filename
+                                ),
+                                path.join(
+                                  "./",
+                                  process.env.urlImagen +
+                                    "/noticias/" +
+                                    noticia.id +
+                                    "/" +
+                                    req.file.filename
+                                )
+                              );
+                              res.json("Noticia actualizada correctamente");
+                            })
+                          )
+                          .catch(err => res.status(400).json(err.msg));
+                      } else {
+                        fs.unlinkSync(
+                          path.join(
+                            "./",
+                            process.env.urlImagen + "/" + req.file.filename
+                          )
+                        );
+                        res.status(422).json({
+                          error:
+                            "Solo se admiten imágenes con formato jpg o png."
+                        });
+                      }
+                    } else {
                       await noticia
                         .update({
                           titular: req.body.titular,
                           contenido: req.body.contenido,
-                          image: req.file.filename,
                           categoria_id: req.body.categoria_id,
                           autor_id: req.body.autor_id
                         })
-                        .then(
-                          await Noticia.findOne({
-                            where: { titular: req.body.titular }
-                          }).then(function(noticia) {
-                            if (
-                              !fs.existsSync(
-                                path.join(
-                                  "./",
-                                  process.env.urlImagen + "/noticias"
-                                )
-                              )
-                            )
-                              fs.mkdirSync(
-                                path.join(
-                                  "./",
-                                  process.env.urlImagen + "/noticias"
-                                )
-                              );
-                            if (
-                              !fs.existsSync(
-                                path.join(
-                                  "./",
-                                  process.env.urlImagen + "/noticias/"
-                                ) + noticia.id
-                              )
-                            )
-                              fs.mkdirSync(
-                                path.join(
-                                  "./",
-                                  process.env.urlImagen + "/noticias/"
-                                ) + noticia.id
-                              );
-                            fs.renameSync(
-                              path.join(
-                                "./",
-                                process.env.urlImagen + "/" + req.file.filename
-                              ),
-                              path.join(
-                                "./",
-                                process.env.urlImagen +
-                                  "/noticias/" +
-                                  noticia.id +
-                                  "/" +
-                                  req.file.filename
-                              )
-                            );
-                            res.json("Noticia actualizada correctamente");
-                          })
-                        )
-                        .catch(err => res.status(400).json(err.msg));
-                    } else {
-                      fs.unlinkSync(
-                        path.join(
-                          "./",
-                          process.env.urlImagen + "/" + req.file.filename
-                        )
-                      );
-                      res.status(422).json({
-                        error: "Solo se admiten imágenes con formato jpg o png."
-                      });
+                        .then(res.json("Noticia actualizada correctamente."))
+                        .catch(err =>
+                          res
+                            .status(400)
+                            .json({ error: "Ha ocurrido un error." })
+                        );
                     }
                   })
                   .catch(err =>
