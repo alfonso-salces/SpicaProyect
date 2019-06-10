@@ -322,17 +322,16 @@ newsController.deleteNew = async (req, res, next) => {
             res.status(403).json({ error: "Acceso denegado." });
           } else {
             var imagenNoticia;
-            await Noticia.findOne({ where: { id: req.params.id } }).then(
-              async function(noticia) {
-                if (noticia) {
-                  imagenNoticia = noticia.image;
-                } else {
-                  res
-                    .status(404)
-                    .json({ success: "No existe la categoria especificada." });
-                }
-              }
-            );
+
+            await Noticia.findOne({ where: { id: req.params.id } })
+              .then(async function(noticia) {
+                imagenNoticia = noticia.image;
+              })
+              .catch(err => {
+                res
+                  .status(404)
+                  .json({ success: "No existe la categoria especificada." });
+              });
 
             await Noticia.destroy({ where: { id: req.params.id } }).then(
               async function(rowDeleted) {

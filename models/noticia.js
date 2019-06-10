@@ -4,8 +4,6 @@ const Model = sequelize.Model;
 const Categoria = require("./categoria").Categorias;
 const Usuario = require("./usuario").Usuarios;
 const Notificacion = require("./notificacion").Notificaciones;
-const fs = require("fs");
-const path = require("path");
 
 class Noticias extends Model {}
 Noticias.init(
@@ -61,18 +59,6 @@ Noticias.beforeCreate((noticia, options) => {
     cuerpo: noticia.titular,
     autor_id: noticia.autor_id
   });
-});
-
-Noticias.beforeBulkDestroy((noticia, options) => {
-  fs.unlinkSync(
-    path.join(
-      "./",
-      process.env.urlImagen + "/noticias/" + noticia.id + "/" + noticia.image
-    )
-  );
-  fs.rmdirSync(
-    path.join("./", process.env.urlImagen + "/noticias/" + noticia.id)
-  );
 });
 
 Noticias.belongsTo(Usuario, { foreignKey: "autor_id" });
